@@ -1,0 +1,33 @@
+name: Development Workflow
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  DeployOnDev:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: install dependency
+        run: |
+          npm i --no-save
+        env:
+          GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
+
+      - name: lint commits
+        run:
+          npm run lint:commit
+        env:
+          GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
+
+      - name: semantic release
+        uses: codfish/semantic-release-action@v1
+        id: semantic
+        env:
+          GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,5 +1,5 @@
 {
-    "name": "nodejs-sdk",
+    "name": "@eyblockchain/nodejs-sdk",
     "version": "1.0.0",
     "description": "Node.js sdk for FISCO BCOS",
     "keywords": [
@@ -12,15 +12,16 @@
         "email": "lichenxi.webank@gmail.com",
         "url": "https://github.com/vita-dounai"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/FISCO-BCOS/nodejs-sdk.git"
-    },
     "author": "catli",
     "engineStrict": true,
     "engines": {
         "node": ">=8.10.0",
         "npm": ">=5.6.0"
+    },
+    "husky": {
+        "hooks": {
+            "commit-msg": "cod-scripts commitlint -E HUSKY_GIT_PARAMS"
+        }
     },
     "scripts": {
         "postinstall": "npm run bootstrap",
@@ -30,13 +31,16 @@
         "install-solc-0.5": "cd ./packages/api/compile/compilers/solc-0.5 && npm install",
         "clean-solc-0.4": "rm -rf ./packages/api/compile/compilers/solc-0.4/node_modules",
         "clean-solc-0.5": "rm -rf ./packages/api/compile/compilers/solc-0.5/node_modules",
-        "test": "mocha"
+        "test": "mocha",
+        "lint:commit": "cod-scripts commitlint ."
     },
     "dependencies": {
         "lerna": "^3.16.1"
     },
     "devDependencies": {
-        "mocha": "^7.1.2"
+        "mocha": "^7.1.2",
+        "husky": "4.2.3",
+        "cod-scripts": "4.0.3"
     },
     "nyc": {
         "all": true,

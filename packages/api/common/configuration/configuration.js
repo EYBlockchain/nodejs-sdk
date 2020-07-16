@@ -51,29 +51,57 @@ function decodePem(pem, encryptType) {
 }
 
 class Configuration {
-    constructor(configFilePath) {
-        if (!configFilePath) {
-            throw new ConfigurationError('invalid configuration file path');
+    constructor(configObjectOrFile) {
+        let config = null;
+    
+        if (typeof configObjectOrFile === "string") {
+          config = this._loadConfigFile(configObjectOrFile);
+        } else if (configObjectOrFile instanceof Object) {
+          config = configObjectOrFile;
+        } else {
+          throw new ConfigurationError("invalid configuration parameter");
         }
-
-        this.configDir = path.dirname(configFilePath);
-        let configContent = fs.readFileSync(configFilePath);
+    
+        if (config.authentication) {
+          this._parseAuthentication(config);
+        }
+        if (config.encryptType) {
+          this._parseEncryptType(config);
+        }
+        if (config.nodes) {
+          this._parseNodes(config);
+        }
+        if (config.groupID) {
+          this._parseGroupID(config);
+        }
+        if (config.chainID) {
+          this._parseChainID(config);
+        }
+        if (config.timeout) {
+          this._parseTimeout(config);
+        }
+        if (config.accounts) {
+          this._parseAccounts(config);
+        }
+        this._parseSolc(config);
+      }
+    
+      _loadConfigFile(configurationFile) {
+        if (!configurationFile) {
+          throw new ConfigurationError("invalid configuration file path");
+        }
+        this.configDir = path.dirname(configurationFile);
+        let configContent = fs.readFileSync(configurationFile);
         let config = null;
         try {
-            config = JSON.parse(configContent);
+          config = JSON.parse(configContent);
         } catch (_) {
-            throw new ConfigurationError('read configuration file failed, expected a well JSON-formatted file');
+          throw new ConfigurationError(
+            "read configuration file failed, expected a well JSON-formatted file"
+          );
         }
-
-        this._parseAuthentication(config);
-        this._parseEncryptType(config);
-        this._parseNodes(config);
-        this._parseGroupID(config);
-        this._parseChainID(config);
-        this._parseTimeout(config);
-        this._parseSolc(config);
-        this._parseAccounts(config);
-    }
+        return config;
+      }
 
     _parseAuthentication(config) {
         if (!config.authentication || typeof config.authentication !== 'object') {
